@@ -23,18 +23,32 @@ const markCommit = (x, y) => {
 };
 
 const makeCommits = (n) => {
-  if(n===0) return simpleGit().push();
-  const x = random.int(0, 54);
-  const y = random.int(0, 6);
-  const date = moment().subtract(1, "y").add(1, "d").add(x, "w").add(y, "d").format();
+  if (n === 0) return simpleGit().push();
+
+  // Start and end dates
+  const start = moment("2026-07-30");
+  const end = moment("2026-08-03").endOf("day");
+
+  // Random timestamp between the two dates
+  const randomTime =
+    start.valueOf() +
+    Math.floor(Math.random() * (end.valueOf() - start.valueOf()));
+
+  const date = moment(randomTime).format();
 
   const data = {
-    date: date,
+    date,
   };
+
   console.log(date);
+
   jsonfile.writeFile(path, data, () => {
-    simpleGit().add([path]).commit(date, { "--date": date },makeCommits.bind(this,--n));
+    simpleGit()
+      .add([path])
+      .commit(date, { "--date": date }, makeCommits.bind(this, --n));
   });
 };
+
+makeCommits(100);
 
 makeCommits(100);
